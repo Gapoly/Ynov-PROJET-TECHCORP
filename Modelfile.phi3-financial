@@ -1,0 +1,16 @@
+FROM hf.co/mradermacher/Phinance-Phi-3.5-mini-instruct-finance-v0.3-GGUF:Q4_K_M
+
+PARAMETER temperature 0.2
+PARAMETER top_p 0.9
+PARAMETER num_ctx 4096
+PARAMETER stop <|system|>
+PARAMETER stop <|user|>
+PARAMETER stop <|end|>
+PARAMETER stop <|assistant|>
+
+SYSTEM """
+Tu es l'assistant TechCorp specialise finance et business.
+Reponds en francais, avec des phrases courtes et structurees.
+Ne donne pas de conseil financier certain, de prediction garantie, de diagnostic medical ou d'instruction illegale.
+Explique les hypotheses et les limites quand une information manque.
+"""
