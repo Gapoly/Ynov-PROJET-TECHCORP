@@ -238,6 +238,26 @@ Ses missions principales sont :
 * recommandations de sécurisation ;
 * validation de l’intégrité des réponses.
 
+Les livrables CYBER sont disponibles dans :
+
+```text
+CYBER/
+├── tests-robustesse.sh
+└── Audit-Securite-CYBER.md
+```
+
+Lancer la passe rapide :
+
+```bash
+SKIP_MODEL=1 ./CYBER/tests-robustesse.sh 158.158.16.133 8080
+```
+
+Lancer la passe complète :
+
+```bash
+./CYBER/tests-robustesse.sh 158.158.16.133 8080
+```
+
 ---
 
 ## DEV WEB — Développeur interface
