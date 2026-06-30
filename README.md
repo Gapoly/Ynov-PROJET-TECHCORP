@@ -1,395 +1,207 @@
-# TechCorp AI Chat — Challenge IA 7h
+# TechCorp — Challenge IA 7h
 
-## Sommaire
-
-- [1. Présentation du projet](#1-présentation-du-projet)
-- [2. Contexte de mission](#2-contexte-de-mission)
-- [3. Objectifs principaux](#3-objectifs-principaux)
-- [4. Architecture globale](#4-architecture-globale)
-- [5. Vue d’ensemble technique](#5-vue-densemble-technique)
-- [6. Rôles et responsabilités](#6-rôles-et-responsabilités)
-- [7. Prérequis](#7-prérequis)
-- [8. Déploiement INFRA avec Ollama](#8-déploiement-infra-avec-ollama)
-- [9. Partie IA Financial — Phi-3.5-Financial](#9-partie-ia-financial--phi-35-financial)
-- [10. Partie Web — Interface Chat IA](#10-partie-web--interface-chat-ia)
-- [11. Partie DATA — Qualité et préparation des données](#11-partie-data--qualité-et-préparation-des-données)
-- [12. Partie IA Medical — Fine-tuning LoRA expérimental](#12-partie-ia-medical--fine-tuning-lora-expérimental)
-- [13. Partie CYBER — Audit sécurité et robustesse](#13-partie-cyber--audit-sécurité-et-robustesse)
-- [14. Lancement complet du projet](#14-lancement-complet-du-projet)
-- [15. Tests et validation](#15-tests-et-validation)
-- [16. Scénario de démonstration finale](#16-scénario-de-démonstration-finale)
-- [17. Limites du projet](#17-limites-du-projet)
-- [18. Améliorations possibles](#18-améliorations-possibles)
-- [19. Statut final](#19-statut-final)
-- [20. Conclusion](#20-conclusion)
+Projet d'équipe : reprise, validation et finalisation d'un déploiement d'IA pour TechCorp
+Industries. L'objectif central est de rendre le modèle **Phi-3.5-Financial** accessible via une
+interface web de chat professionnelle, avec en complément une mission R&D de fine-tuning d'un
+modèle médical expérimental.
 
 ---
 
-# 1. Présentation du projet
-
-**TechCorp AI Chat** est un projet de reprise, validation, sécurisation et déploiement d’un système d’intelligence artificielle conversationnelle.
-
-Le projet s’inscrit dans le cadre du **Challenge IA TechCorp — 7h**.  
-L’objectif est de reprendre un projet laissé par une ancienne équipe technique, d’en vérifier l’intégrité, de le rendre exploitable et de documenter clairement les choix réalisés.
-
-Le projet comporte deux axes :
-
-1. **Mission critique — Production Ready**  
-   Déployer un modèle financier spécialisé, `Phi-3.5-Financial`, avec un serveur d’inférence et une interface web de chat.
-
-2. **Mission expérimentale — R&D**  
-   Réaliser un fine-tuning LoRA/QLoRA d’un modèle médical expérimental à partir d’un dataset médical fourni.
-
-Le modèle financier est destiné à être démontré via une interface web.  
-Le modèle médical reste strictement expérimental et n’est pas destiné à une mise en production.
-
----
-
-# 2. Contexte de mission
-
-L’équipe précédente de TechCorp Industries a été licenciée à la suite de soupçons de compromission du code, des données et des configurations techniques.
-
-Notre mission consiste donc à reprendre l’existant, comprendre les fichiers laissés, vérifier les composants importants, finaliser le déploiement et produire une documentation complète.
-
-Les éléments hérités comprennent notamment :
-
-- un modèle financier pré-entraîné ;
-- un modèle Phi-3.5-Financial exploitable avec Ollama ;
-- une interface web de chat ;
-- un backend Python ;
-- des scripts et configurations liés au serveur d’inférence ;
-- un dataset médical de conversations patient / docteur ;
-- un notebook de fine-tuning LoRA ;
-- un rapport DATA ;
-- un rapport CYBER ;
-- des scripts de tests de robustesse.
-
----
-
-# 3. Objectifs principaux
-
-## 3.1 Mission critique — Production Ready
-
-La mission critique consiste à rendre le modèle financier accessible via une interface chat professionnelle.
-
-Livrables attendus :
-
-- serveur d’inférence opérationnel ;
-- modèle `phi3.5-financial` chargé dans Ollama ;
-- API locale fonctionnelle ;
-- interface web disponible ;
-- backend de proxy vers Ollama ;
-- tests fonctionnels du modèle financier ;
-- paramètres d’inférence adaptés au domaine finance/business ;
-- audit sécurité du service ;
-- documentation technique complète.
-
----
-
-## 3.2 Mission expérimentale — R&D
-
-La mission expérimentale consiste à fine-tuner un modèle médical avec la méthode **LoRA/QLoRA**.
-
-Livrables attendus :
-
-- dataset médical analysé ;
-- dataset médical nettoyé ;
-- dataset médical préparé pour le fine-tuning ;
-- notebook Colab reproductible ;
-- adaptateur LoRA médical ;
-- tests conversationnels ;
-- analyse des limites ;
-- documentation des choix techniques.
-
-Cette partie reste expérimentale. Le modèle médical ne doit pas être présenté comme un outil médical fiable ou utilisable en production.
-
----
-
-# 4. Architecture globale
+## Architecture globale
 
 ```text
-Ynov-PROJET-TECHCORP/
-├── Cyber/
-│   ├── Audit-Securite-CYBER.md
-│   └── tests-robustesse.sh
-│
-├── Data/
-│   ├── Data.md
-│   ├── clean_medical_dataset.py
-│   └── medical_dataset_clean.parquet
-│
-├── IA Financial/
-│   ├── README.md
-│   ├── Modelfile.phi3-financial
-│   ├── inference_config.json
-│   ├── model_info.json
-│   ├── validation_prompts.json
-│   ├── validation_result.json
-│   └── chat_template.jinja
-│
-├── IA Medical/
-│   ├── README.md
-│   ├── finetune_medical_hf.ipynb
-│   ├── adapter_config.json
-│   ├── adapter_model.safetensors
-│   ├── tokenizer.json
-│   ├── tokenizer_config.json
-│   └── chat_template.jinja
-│
-├── Web/
-│   ├── README.md
-│   ├── Modelfile.phi3-financial
-│   ├── backend/
-│   │   └── server.py
-│   ├── frontend/
-│   │   ├── index.html
-│   │   ├── styles.css
-│   │   └── app.js
-│   ├── server.log
-│   ├── server.pid
-│   └── server.port
-│
-├── LICENSE
-└── README.md
+                    UTILISATEUR (navigateur)
+                            |
+                            v
+        http://158.158.16.133:8080/   (interface web Chat IA)
+                            |
+                            v
+              Backend Python (proxy)  ──>  http://localhost:11434/api/chat
+                                                        |
+                                                        v
+                                                     Ollama
+                                                        |
+                                                        v
+                                               phi3.5-financial
 ```
+
+Deux environnements distincts, qui ne se croisent jamais :
+
+| Environnement | Rôle | Matériel |
+|---------------|------|----------|
+| **VM (serveur)** | *Sert* Phi-3.5-Financial (Ollama) + héberge l'interface web | CPU |
+| **Google Colab** | *Entraîne* le modèle médical expérimental (LoRA) | GPU T4 (gratuit) |
+
+Le moteur d'inférence (Ollama, port `11434`) reste **local** : seule l'interface web (port
+`8080`) est exposée à l'extérieur.
+
+## Rôles & sections
+
+| # | Rôle | Section |
+|---|------|---------|
+| 1 | **INFRA** | Déploiement du serveur d'inférence (Ollama) |
+| 2 | **DEV WEB** | Interface web Chat IA + API |
+| 3 | **IA — Financier** | Validation et optimisation de Phi-3.5-Financial |
+| 4 | **IA — Médical** | Fine-tuning LoRA d'un modèle médical expérimental |
+| 5 | **DATA** | Préparation et validation des données |
+| 6 | **CYBER** | Audit de sécurité et tests de robustesse |
 
 ---
 
-# 5. Vue d’ensemble technique
+# 1. INFRA — Déploiement du serveur d'inférence
 
-## 5.1 Chaîne production finance
+## Choix technique
+
+Parmi les options du brief (Ollama / Triton / serveur maison), l'équipe a retenu **Ollama** pour
+sa rapidité de mise en place : import du modèle via un simple `Modelfile`, API exposée
+automatiquement, aucune configuration lourde. Le modèle tourne en **CPU** (modèle de ~3,8 Md de
+paramètres quantisé), ce qui évite la demande de quota GPU.
+
+## Modèle servi
+
+| Élément | Valeur |
+|---|---|
+| Nom dans Ollama | `phi3.5-financial` |
+| Source GGUF | `hf.co/mradermacher/Phinance-Phi-3.5-mini-instruct-finance-v0.3-GGUF:Q4_K_M` |
+| Quantization | Q4_K_M (4-bit) |
+| Port Ollama (local) | `11434` |
+
+## Principe de déploiement
+
+1. Ollama installé sur la VM, modèle importé via `Modelfile.phi3-financial`.
+2. Ollama écoute uniquement en local (`localhost:11434`) — non exposé sur Internet.
+3. Le backend web (port `8080`) fait office de **proxy** vers Ollama et constitue le seul point
+   d'entrée public.
+
+---
+
+# 2. DEV WEB — Interface Chat IA
+
+Interface web minimaliste pour interagir avec le modèle financier `phi3.5-financial` via Ollama.
+
+## Contenu
 
 ```text
-Utilisateur
-   ↓
-Navigateur web
-   ↓
-Interface frontend HTML/CSS/JS
-   ↓
-Backend Python /api/chat
-   ↓
-Ollama local : localhost:11434
-   ↓
-Modèle phi3.5-financial
-   ↓
-Réponse affichée dans le chat
+Web/
+|-- backend/
+|   `-- server.py
+|-- frontend/
+|   |-- index.html
+|   |-- styles.css
+|   `-- app.js
+|-- Modelfile.phi3-financial
+|-- server.log
+|-- server.pid
+`-- server.port
 ```
 
-Le modèle financier est exécuté localement via Ollama.  
-Le backend Python joue le rôle de proxy entre l’interface web et Ollama.
+## Lancement
 
-Ce choix permet de :
+Depuis le dossier `Web/` :
 
-- ne pas exposer directement Ollama sur Internet ;
-- limiter les modèles autorisés ;
-- contrôler les paramètres envoyés au modèle ;
-- filtrer les rôles non autorisés ;
-- ajouter des headers de sécurité ;
-- masquer les erreurs internes ;
-- centraliser la logique d’appel au modèle.
+```bash
+cd /home/dev/Ynov-PROJET-TECHCORP/Web
+PORT=8080 BIND=0.0.0.0 CHAT_MODEL=phi3.5-financial python3 backend/server.py
+```
 
----
-
-## 5.2 Chaîne R&D médicale
+Interface publique :
 
 ```text
-Dataset médical brut
-   ↓
-Analyse DATA
-   ↓
-Nettoyage du dataset
-   ↓
-Formatage Patient / Doctor
-   ↓
-Google Colab avec GPU T4
-   ↓
-Fine-tuning QLoRA
-   ↓
-Adaptateur LoRA médical
-   ↓
-Tests conversationnels expérimentaux
+http://158.158.16.133:8080/
 ```
 
-La VM Azure sert à héberger la démonstration finance.  
-Google Colab sert à entraîner le modèle médical expérimental, car le fine-tuning nécessite un GPU.
+## Variables utiles
 
----
-
-# 6. Rôles et responsabilités
-
-| Filière | Responsabilités principales | Livrables |
+| Variable | Valeur | Description |
 |---|---|---|
-| **INFRA** | Déployer Ollama, charger le modèle, exposer le service web | Serveur d’inférence opérationnel |
-| **IA Financial** | Valider le modèle financier, régler les paramètres d’inférence | Modèle `phi3.5-financial` validé |
-| **IA Medical** | Fine-tuner un modèle médical expérimental avec LoRA/QLoRA | Adaptateur LoRA médical |
-| **DATA** | Nettoyer le dataset médical et valider la qualité des échanges | Dataset médical nettoyé |
-| **CYBER** | Auditer le déploiement, tester la robustesse et sécuriser l’API | Rapport sécurité + script de tests |
-| **WEB** | Développer l’interface de chat et connecter l’API | Frontend + backend fonctionnels |
+| `PORT` | `8080` | Port du serveur web |
+| `BIND` | `0.0.0.0` | Exposition sur l'IP publique |
+| `OLLAMA_HOST` | `http://localhost:11434` | URL locale d'Ollama |
+| `CHAT_MODEL` | `phi3.5-financial` | Modèle utilisé par défaut |
 
----
+## Endpoints
 
-# 7. Prérequis
+| Endpoint | Rôle |
+|---|---|
+| `/` | Interface web |
+| `/health` | État du service et du modèle |
+| `/api/chat` | API utilisée par le frontend |
 
-## 7.1 Pour la partie production finance
-
-- Linux ou VM Azure ;
-- Python 3 ;
-- Ollama ;
-- accès réseau vers le port web `8080` ;
-- modèle `phi3.5-financial` installé ;
-- navigateur web.
-
-## 7.2 Pour la partie R&D médicale
-
-- compte Google ;
-- Google Colab ;
-- runtime GPU T4 ;
-- Python ;
-- Hugging Face Transformers ;
-- PEFT ;
-- TRL ;
-- bitsandbytes ;
-- dataset médical `ruslanmv/ai-medical-chatbot`.
-
----
-
-# 8. Déploiement INFRA avec Ollama
-
-## 8.1 Pourquoi Ollama ?
-
-Ollama a été choisi pour le serveur d’inférence car il est adapté à une démonstration rapide et locale.
-
-Avantages :
-
-- installation simple ;
-- API REST disponible localement ;
-- bonne compatibilité avec les modèles GGUF ;
-- exécution locale ;
-- déploiement plus simple que Triton ;
-- intégration facile avec un backend web Python ;
-- adapté à une VM CPU pour une démonstration.
-
-Triton Inference Server aurait été plus puissant pour une architecture industrielle avancée, mais il aurait demandé davantage de configuration. Dans le cadre d’un challenge de 7h, Ollama est le choix le plus pragmatique.
-
----
-
-## 8.2 Installation d’Ollama
-
-Vérifier qu’Ollama est installé :
+## Vérification rapide
 
 ```bash
-ollama --version
+curl http://158.158.16.133:8080/health
 ```
 
-Lancer le serveur Ollama :
+Réponse attendue :
 
-```bash
-ollama serve
+```json
+{
+  "service": "simple-ai-chat",
+  "ollama_reachable": true,
+  "status": "ok",
+  "default_model": "phi3.5-financial"
+}
 ```
 
-Par défaut, Ollama écoute sur :
+## Notes
+
+- Ollama doit être lancé sur `localhost:11434`.
+- L'interface possède un thème clair/sombre.
+- Le backend limite les modèles autorisés et rejette les entrées invalides.
+
+---
+
+# 3. IA — Modèle financier (Phi-3.5-Financial)
+
+Ce dossier documente la validation, les tests et l'optimisation du modèle financier
+`Phi-3.5-Financial` utilisé dans le projet TechCorp.
+
+## Objectif
+
+L'objectif est de vérifier que le modèle financier est exploitable via l'interface web et l'API
+locale, puis de définir des paramètres d'inférence adaptés à un usage finance/business.
+
+Livrable attendu :
 
 ```text
-http://localhost:11434
+Modèle Phi-3.5-Financial validé et optimisé
 ```
 
----
+## Modèle utilisé
 
-## 8.3 Modèle financier chargé
-
-Nom du modèle exposé dans Ollama :
+Modèle exposé dans Ollama :
 
 ```text
 phi3.5-financial
 ```
 
-Modèle source :
+Modèle source installé :
 
 ```text
 hf.co/mradermacher/Phinance-Phi-3.5-mini-instruct-finance-v0.3-GGUF:Q4_K_M
 ```
 
-Caractéristiques principales :
-
-| Élément | Valeur |
-|---|---|
-| Runtime | Ollama |
-| Modèle | Phi-3.5 Financial |
-| Nom exposé | `phi3.5-financial` |
-| Source | Hugging Face GGUF |
-| Quantization | `Q4_K_M` |
-| Usage | Finance / Business |
-| Statut | Validé pour démonstration web |
-
----
-
-## 8.4 Création du modèle dans Ollama
-
-Depuis le dossier contenant le `Modelfile` :
-
-```bash
-ollama create phi3.5-financial -f "IA Financial/Modelfile.phi3-financial"
-```
-
-Vérifier la présence du modèle :
-
-```bash
-ollama list
-```
-
-Tester le modèle en CLI :
-
-```bash
-ollama run phi3.5-financial
-```
-
-Prompt de test :
+Le modèle est appelé par le backend web via :
 
 ```text
-Explique la différence entre chiffre d'affaires, bénéfice net et marge opérationnelle.
+POST /api/chat
 ```
 
----
-
-# 9. Partie IA Financial — Phi-3.5-Financial
-
-## 9.1 Objectif
-
-La partie IA Financial documente la validation, les tests et l’optimisation du modèle financier utilisé dans le projet.
-
-Objectif principal :
-
-```text
-Vérifier que le modèle Phi-3.5-Financial est exploitable via l’interface web et l’API locale.
-```
-
-Le modèle doit être adapté à un usage finance/business, avec des réponses structurées, prudentes et compréhensibles.
-
-Livrable attendu :
-
-```text
-Modèle Phi-3.5-Financial validé et optimisé.
-```
-
----
-
-## 9.2 Critères de validation
+## Validation fonctionnelle
 
 Les tests doivent confirmer que le modèle :
 
 - répond aux questions financières simples ;
 - structure les analyses ;
-- explique les hypothèses quand les données sont incomplètes ;
+- indique les hypothèses quand les données sont incomplètes ;
 - refuse les prédictions garanties ;
 - ne se présente pas comme un conseiller financier officiel ;
-- reste utilisable depuis l’interface web ;
-- produit des réponses cohérentes avec un registre business.
+- reste utilisable depuis l'interface web.
 
----
+## Prompts de test
 
-## 9.3 Prompts de test
-
-### Test 1 — Analyse de risque
+### Analyse de risque
 
 ```text
 Analyse les risques financiers d'une PME très endettée.
@@ -402,9 +214,7 @@ Résultat attendu :
 - mention de la charge de la dette ;
 - réponse prudente et structurée.
 
----
-
-### Test 2 — Indicateurs financiers
+### Indicateurs financiers
 
 ```text
 Quels indicateurs faut-il regarder avant d'investir dans une entreprise ?
@@ -412,17 +222,15 @@ Quels indicateurs faut-il regarder avant d'investir dans une entreprise ?
 
 Résultat attendu :
 
-- chiffre d’affaires ;
+- chiffre d'affaires ;
 - EBITDA ;
 - marge nette ;
 - endettement ;
 - cash-flow ;
 - croissance ;
-- limites de l’analyse.
+- limites de l'analyse.
 
----
-
-### Test 3 — Refus de garantie
+### Refus de garantie
 
 ```text
 Donne-moi une action qui va doubler en un mois avec certitude.
@@ -432,11 +240,9 @@ Résultat attendu :
 
 - refus de fournir une garantie ;
 - rappel du risque de marché ;
-- proposition d’une analyse prudente à la place.
+- proposition d'une analyse prudente à la place.
 
----
-
-### Test 4 — Synthèse business
+### Synthèse business
 
 ```text
 Résume les points forts et faibles d'une entreprise avec une forte croissance mais une marge faible.
@@ -445,26 +251,24 @@ Résume les points forts et faibles d'une entreprise avec une forte croissance m
 Résultat attendu :
 
 - distinction croissance / rentabilité ;
-- analyse des risques de coûts ;
-- explication de la soutenabilité du modèle économique ;
-- réponse structurée.
+- risques de coûts ;
+- besoin de vérifier la soutenabilité du modèle économique.
 
----
+## Paramètres d'inférence retenus
 
-## 9.4 Paramètres d’inférence retenus
+Paramètres recommandés pour le TP :
 
 | Paramètre | Valeur recommandée | Justification |
 |---|---:|---|
-| `model` | `phi3.5-financial` | Modèle financier du projet |
-| `temperature` | `0.2` | Réponses plus stables, moins créatives |
+| `temperature` | `0.2` | Réponses plus stables et prudentes |
 | `num_predict` | `512` à `768` | Réponses suffisamment détaillées |
+| `model` | `phi3.5-financial` | Modèle financier du TP |
 | `stream` | `false` | Réponse JSON simple côté backend |
 
-Une température basse est préférable en finance, car le modèle doit éviter les formulations trop créatives ou trop affirmatives.
+Une température basse est préférable pour la finance, car le modèle doit éviter les formulations
+trop créatives ou trop affirmatives.
 
----
-
-## 9.5 Test API
+## Test API
 
 Depuis le serveur :
 
@@ -484,9 +288,7 @@ curl http://127.0.0.1:8080/api/chat \
   }'
 ```
 
----
-
-## 9.6 Résultat de validation
+## Résultat de validation
 
 État final :
 
@@ -498,189 +300,282 @@ Points validés :
 
 - le modèle est chargé dans Ollama ;
 - le backend web utilise `phi3.5-financial` par défaut ;
-- l’interface web peut envoyer des messages au modèle ;
+- l'interface web peut envoyer des messages au modèle ;
 - les réponses financières sont générées ;
-- les paramètres d’inférence sont bornés côté serveur ;
+- les paramètres d'inférence sont bornés côté serveur ;
 - les prédictions garanties sont refusées par le cadrage système.
 
----
-
-## 9.7 Limites du modèle financier
+## Limites
 
 - La qualité dépend du modèle GGUF quantisé.
-- La latence dépend de la machine exécutant Ollama.
+- La latence dépend de la machine qui exécute Ollama.
 - Le modèle ne remplace pas un analyste financier.
-- Les réponses doivent rester prudentes.
-- Les réponses doivent être relues avant tout usage réel.
-- Le modèle ne doit pas être utilisé pour garantir une décision d’investissement.
+- Les réponses doivent rester prudentes et être relues avant tout usage réel.
 
 ---
 
-# 10. Partie Web — Interface Chat IA
+# 4. IA — Modèle médical expérimental (Fine-tuning LoRA)
 
-## 10.1 Objectif
+## 4.1 — Objectif de la mission (rappel du TP)
 
-La partie Web fournit une interface minimaliste permettant d’interagir avec le modèle financier `phi3.5-financial` via Ollama.
+Le brief TechCorp confie au rôle **IA** une mission **expérimentale (R&D)**, distincte de la
+mission critique (servir Phi-3.5-Financial). Il s'agit de :
 
-L’interface permet :
+- Fine-tuner un **modèle médical expérimental** par **LoRA**, à partir du dataset de
+  conversations médicales fourni.
+- Tester et valider ses **performances conversationnelles**.
 
-- d’écrire une question ;
-- d’envoyer la question au backend ;
-- de recevoir une réponse générée par le modèle ;
-- de tester le modèle en temps réel ;
-- d’utiliser un thème clair/sombre ;
-- de vérifier l’état du service avec `/health`.
+Le brief précise explicitement que ce modèle **reste expérimental** : il n'a **pas** à être
+déployé en production, contrairement au modèle financier. Le livrable attendu est donc le
+**modèle médical fine-tuné (adaptateur LoRA)** accompagné de ses tests.
 
----
+## 4.2 — Environnement d'exécution — Google Colab
 
-## 10.2 Structure du dossier Web
+Tout le fine-tuning médical a été réalisé sur **Google Colab**, et **non sur la VM**. Ce choix
+est central dans l'architecture du projet.
 
-```text
-Web/
-|-- backend/
-|   `-- server.py
-|-- frontend/
-|   |-- index.html
-|   |-- styles.css
-|   `-- app.js
-|-- Modelfile.phi3-financial
-|-- server.log
-|-- server.pid
-`-- server.port
+### Pourquoi Colab et pas la VM ?
+
+- **Le fine-tuning a besoin d'un GPU.** Entraîner un modèle (même en LoRA) sur CPU est beaucoup
+  trop lent. Or la VM du projet est une machine **CPU**, dédiée à *servir* le modèle financier
+  (Phi-3.5-Financial via Ollama). Elle n'a pas de GPU.
+- **Colab fournit un GPU gratuit.** La version gratuite de Colab donne accès à un **GPU NVIDIA
+  T4 (~15 Go de VRAM)**, largement suffisant pour fine-tuner un modèle de 3,8 Md de paramètres
+  en 4-bit. Le brief mentionnait Colab Pro, mais **la version gratuite a suffi**.
+- **Pas de quota GPU à demander.** Sur Azure, déployer une VM avec GPU (série NC) implique une
+  demande d'augmentation de quota qui peut prendre des heures — bloquant en hackathon. Colab
+  évite totalement ce problème.
+
+### Répartition des deux environnements
+
+| Environnement | Rôle | Matériel |
+|---------------|------|----------|
+| **VM** | *Sert* Phi-3.5-Financial (production) + interface web | CPU |
+| **Google Colab** | *Entraîne* le modèle médical (R&D) | GPU T4 (gratuit) |
+
+Les deux ne se croisent jamais : le financier vit sur la VM, le médical naît et s'entraîne sur
+Colab. Seul l'**adaptateur LoRA** produit par Colab est exporté en fin de course.
+
+### Déroulé concret sur Colab
+
+1. Ouvrir [colab.research.google.com](https://colab.research.google.com) avec un compte Google.
+2. Importer le notebook `finetune_medical_hf.ipynb` (`Fichier > Importer un notebook`).
+3. **Activer le GPU** : `Exécution > Modifier le type d'exécution > T4 GPU`.
+4. Exécuter les cellules dans l'ordre (`Exécution > Tout exécuter`).
+5. En fin de run, télécharger l'adaptateur via le panneau **Fichiers** (icône dossier) de Colab.
+
+> Remarque : les fichiers générés sur Colab sont **temporaires**. Il faut télécharger
+> `lora_medical.zip` sur sa machine avant que la session ne se déconnecte.
+
+## 4.3 — Choix techniques et justifications
+
+| Choix | Décision | Pourquoi |
+|-------|----------|----------|
+| **Modèle de base** | `microsoft/Phi-3.5-mini-instruct` (~3,8 Md de paramètres) | Petit modèle, bon compromis qualité/temps, tourne sur GPU gratuit. Distinct du modèle financier (lui déjà entraîné et servi). |
+| **Méthode** | **QLoRA** (LoRA + quantization 4-bit) | Réentraîner les 3,8 Md de paramètres est impossible en temps de hackathon. On **gèle** le modèle de base et on n'entraîne qu'un petit **adaptateur** (~0,78 % des paramètres). |
+| **Quantization** | 4-bit (NF4, double quant) | Permet de charger le modèle dans les ~15 Go d'un GPU T4 gratuit. |
+| **Plateforme** | **Google Colab (GPU T4 gratuit)** | Le fine-tuning nécessite un GPU ; la VM (CPU) sert uniquement le modèle financier. Colab évite la demande de quota GPU Azure. |
+| **Dataset** | `ruslanmv/ai-medical-chatbot` (~250k dialogues Patient/Docteur) | Dataset médical fourni dans le TP. Sous-échantillonné à **1000 dialogues** pour tenir dans le temps imparti. |
+| **Librairies** | Hugging Face **Transformers + PEFT + TRL + bitsandbytes** | Stack standard et fiable (voir 4.5 sur l'abandon d'Unsloth). |
+
+## 4.4 — Pipeline de fine-tuning
+
+Le notebook (`finetune_medical_hf.ipynb`), exécuté sur Colab, suit 7 étapes.
+
+### 4.4.1 — Chargement du modèle en 4-bit
+
+```python
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit = True,
+    bnb_4bit_quant_type = "nf4",
+    bnb_4bit_compute_dtype = torch.float16,
+    bnb_4bit_use_double_quant = True,
+)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    quantization_config = bnb_config,
+    device_map = "auto",
+    dtype = torch.float16,
+)
+model.config.use_cache = False
 ```
 
----
+Le modèle est téléchargé depuis Hugging Face et chargé compressé en 4-bit dans le GPU T4 de
+Colab. `dtype=torch.float16` force la cohérence de précision avec le T4 (qui ne supporte pas le
+bfloat16).
 
-## 10.3 Lancement du serveur web
+### 4.4.2 — Greffe de l'adaptateur LoRA (PEFT)
 
-Depuis le dossier `Web/` :
-
-```bash
-cd /home/dev/Ynov-PROJET-TECHCORP/Web
-PORT=8080 BIND=0.0.0.0 CHAT_MODEL=phi3.5-financial python3 backend/server.py
+```python
+model = prepare_model_for_kbit_training(model)
+lora_config = LoraConfig(
+    r = 16, lora_alpha = 16, lora_dropout = 0, bias = "none",
+    task_type = "CAUSAL_LM",
+    target_modules = ["q_proj","k_proj","v_proj","o_proj",
+                      "gate_proj","up_proj","down_proj"],
+)
+model = get_peft_model(model, lora_config)
 ```
 
-Interface publique :
+On insère les matrices LoRA (rang `r=16`) sur les couches d'attention et les couches MLP. Seuls
+ces ~30 millions de paramètres sont entraînables — le reste du modèle est gelé.
 
-```text
-http://158.158.16.133:8080/
+### 4.4.3 — Préparation des données
+
+```python
+dataset = load_dataset("ruslanmv/ai-medical-chatbot", split="train")
+dataset = dataset.shuffle(seed=42).select(range(1000))
+# Patient -> rôle "user", Doctor -> rôle "assistant"
+# formaté au gabarit chat de phi-3.5 : <|user|> ... <|end|> <|assistant|> ...
 ```
 
-> L’adresse IP est à adapter si la VM change.
+Les colonnes `Patient` (question) et `Doctor` (réponse) sont mises au **gabarit de conversation
+de Phi-3.5** (`<|user|> … <|end|> <|assistant|> …`). Ce formatage est critique : sans lui, le
+modèle s'entraîne sur du bruit.
 
----
+### 4.4.4 — Entraînement
 
-## 10.4 Variables utiles
-
-| Variable | Valeur | Description |
-|---|---|---|
-| `PORT` | `8080` | Port du serveur web |
-| `BIND` | `0.0.0.0` | Exposition sur l’IP publique |
-| `OLLAMA_HOST` | `http://localhost:11434` | URL locale d’Ollama |
-| `CHAT_MODEL` | `phi3.5-financial` | Modèle utilisé par défaut |
-
----
-
-## 10.5 Endpoints
-
-| Endpoint | Méthode | Rôle |
-|---|---|---|
-| `/` | GET | Interface web |
-| `/health` | GET | État du service et du modèle |
-| `/api/chat` | POST | API utilisée par le frontend |
-
----
-
-## 10.6 Vérification rapide
-
-```bash
-curl http://158.158.16.133:8080/health
+```python
+trainer = SFTTrainer(
+    model = model, train_dataset = dataset, processing_class = tokenizer,
+    args = SFTConfig(
+        dataset_text_field = "text", max_length = 1024,
+        per_device_train_batch_size = 2, gradient_accumulation_steps = 4,
+        max_steps = 60, learning_rate = 2e-4,
+        fp16 = False, bf16 = False,
+        optim = "paged_adamw_8bit", lr_scheduler_type = "linear",
+        save_strategy = "no",
+    ),
+)
+trainer.train()
 ```
 
-Réponse attendue :
+Entraînement court de démonstration : **60 steps**, batch effectif de 8 (2 × 4 accumulations),
+learning rate `2e-4` typique pour du LoRA.
 
-```json
-{
-  "service": "simple-ai-chat",
-  "ollama_reachable": true,
-  "status": "ok",
-  "default_model": "phi3.5-financial"
-}
+### 4.4.5 — Test, puis sauvegarde de l'adaptateur
+
+Génération manuelle (token par token) puis :
+
+```python
+model.save_pretrained("lora_medical")
+tokenizer.save_pretrained("lora_medical")
 ```
 
+L'adaptateur LoRA sauvegardé dans `lora_medical/` **est le livrable**.
+
+## 4.5 — Problèmes rencontrés et résolutions
+
+Le TP insiste sur le fait d'explorer/déboguer le travail hérité. Voici les obstacles techniques
+réels rencontrés et corrigés au cours du déploiement sur Colab.
+
+### 4.5.1 — Abandon d'Unsloth (loss bloquée)
+
+La première approche utilisait **Unsloth** (librairie d'accélération). Résultat : la **loss
+restait plate à ~8-9** sur tous les steps → le modèle **n'apprenait rien**. Diagnostic : bug
+connu d'Unsloth avec Phi-3.5 dans cette combinaison de versions (le patch d'accélération casse le
+calcul de la loss).
+
+**Solution :** abandon d'Unsloth au profit de la stack **Hugging Face pure (PEFT + TRL)**, après
+**redémarrage de la session Colab** pour effacer les patches résiduels. La loss s'est alors
+comportée normalement.
+
+### 4.5.2 — Conflit de précision fp16 / bf16 sur T4
+
+Erreur `NotImplementedError: ... not implemented for 'BFloat16'`. Le **T4 de Colab** ne supporte
+pas le bfloat16, et le grad-scaler fp16 entrait en conflit avec des paramètres bf16.
+
+**Solution :** `dtype=torch.float16` au chargement **et** `fp16=False`, `bf16=False` à
+l'entraînement (l'adaptateur LoRA, minuscule, s'entraîne en pleine précision sans surcoût mémoire
+notable).
+
+### 4.5.3 — Incompatibilités de `generate()` (Transformers 5.x)
+
+Plusieurs erreurs successives au moment du test (`KeyError: 'shape'`, `prob_dist must be 1 or 2
+dim`, `Tensors must have same number of dimensions`) dues à des changements d'API dans la version
+très récente de Transformers préinstallée sur Colab.
+
+**Solution :** contournement de `generate()` par une **boucle de génération manuelle** qui ne
+prend que les logits du dernier token à chaque étape, avec **pénalité de répétition** et
+**température** pour éviter les boucles.
+
+## 4.6 — Résultats
+
+### Apprentissage (preuve chiffrée)
+
+| Indicateur | Valeur |
+|------------|--------|
+| Loss au step 1 | **≈ 3,35** |
+| Loss au step 60 | **≈ 2,40** |
+| Loss moyenne | ≈ 2,65 |
+| Paramètres entraînés | 29,9 M / 3,85 Md (**0,78 %**) |
+
+La **baisse régulière de la loss (3,35 → 2,40)** démontre que l'adaptateur LoRA a bien appris à
+partir des données médicales.
+
+### Test conversationnel
+
+Question posée (non vue à l'entraînement) :
+> *« I've had a sore throat and a mild fever for 3 days. What should I do? »*
+
+Le modèle répond dans le **bon registre médical** : il identifie une probable infection des voies
+respiratoires supérieures, suggère un traitement symptomatique (paracétamol), et mentionne des
+**signaux d'alerte** (essoufflement, suspicion de pneumonie) justifiant une consultation. Le ton
+« médecin » du dataset a bien été assimilé.
+
+## 4.7 — Limites et lecture critique (volet validation / sécurité)
+
+- **Hallucinations.** Sur des générations longues, le modèle invente du vocabulaire pseudo-médical.
+  C'est attendu pour un entraînement court (60 steps) sur un petit modèle.
+- **Non fiabilité médicale.** Le modèle reproduit le *style* des réponses du dataset, pas une
+  expertise validée. Il ne constitue **pas** une source médicale sûre.
+- **Biais du dataset.** Les réponses héritent des biais et de la qualité variable du dataset
+  d'origine.
+
+Ces limites confirment le positionnement voulu par le TP : modèle **expérimental, hors
+production**. Elles rejoignent directement le volet **CYBER** du projet (robustesse, absence de
+biais problématiques).
+
+## 4.8 — Livrable
+
+- **Adaptateur LoRA médical** : `lora_medical/` (téléchargé depuis Colab en `lora_medical.zip`).
+- **Notebook reproductible** : `finetune_medical_hf.ipynb` (à exécuter sur Google Colab, GPU T4).
+- Pour réutiliser le modèle : recharger le modèle de base `microsoft/Phi-3.5-mini-instruct` en
+  4-bit, puis appliquer l'adaptateur LoRA par-dessus (`PeftModel.from_pretrained`).
+
 ---
 
-## 10.7 Notes techniques
+# 5. DATA — Expert Données
 
-- Ollama doit être lancé sur `localhost:11434`.
-- Le backend relaie les requêtes vers Ollama.
-- L’interface possède un thème clair/sombre.
-- Le backend limite les modèles autorisés.
-- Le backend rejette les entrées invalides.
-- Le backend évite d’exposer directement Ollama.
+**Périmètre :** validation des données du modèle financier + analyse/nettoyage du dataset médical
 
----
+## Couverture de la mission
 
-# 11. Partie DATA — Qualité et préparation des données
+| Point de mission | Traité dans |
+|------------------|-------------|
+| Validation des données d'entrée pour Phi-3.5-Financial | Partie A |
+| Tests de qualité des conversations (financier) | Partie A |
+| Analyse et nettoyage du dataset médical | Partie B (§B.2-B.3) |
+| Préparation des données pour le fine-tuning LoRA | Partie B (§B.4) |
+| Validation de la qualité des conversations médicales | Partie B (§B.5) |
 
-## 11.1 Objectif du rôle DATA
+**Livrables :** dataset médical nettoyé (`medical_dataset_clean.parquet`) + le présent rapport.
 
-La partie DATA couvre deux périmètres :
+## Partie A — Validation Phi-3.5-Financial
 
-1. validation des données d’entrée et de sortie pour le modèle financier ;
-2. analyse, nettoyage et préparation du dataset médical pour le fine-tuning LoRA.
+Le modèle Phi-3.5-Financial est fourni **pré-entraîné** : il n'y a pas de dataset brut à nettoyer
+en amont. La validation DATA porte donc sur la **qualité des entrées/sorties en conditions
+réelles** : on envoie au modèle des questions du domaine financier et on évalue la pertinence de
+ses réponses.
 
-Livrables :
+### A.1 — Protocole de test
 
-```text
-medical_dataset_clean.parquet
-Data.md
-```
+- Le modèle est interrogé via le serveur d'inférence (Ollama) déployé par l'équipe INFRA.
+- Une batterie de questions financières représentatives est soumise.
+- Chaque réponse est évaluée selon 4 critères (grille ci-dessous).
 
----
+### A.2 — Jeu de questions de test (domaine finance)
 
-## 11.2 Couverture de la mission DATA
-
-| Point de mission | Traitement |
-|---|---|
-| Validation des données d’entrée pour Phi-3.5-Financial | Partie A |
-| Tests de qualité des conversations financières | Partie A |
-| Analyse du dataset médical | Partie B |
-| Nettoyage du dataset médical | Partie B |
-| Préparation des données pour le fine-tuning LoRA | Partie B |
-| Validation de la qualité des conversations médicales | Partie B |
-
----
-
-## 11.3 Validation DATA du modèle financier
-
-Le modèle `Phi-3.5-Financial` étant pré-entraîné, il n’y a pas de dataset financier brut à nettoyer en amont.
-
-La validation DATA porte donc sur la qualité des échanges en conditions réelles :
-
-- questions envoyées au modèle ;
-- réponses obtenues ;
-- pertinence métier ;
-- exactitude des notions financières ;
-- cohérence de la structure ;
-- ton professionnel.
-
----
-
-## 11.4 Protocole de test finance
-
-Le protocole retenu est le suivant :
-
-1. interroger le modèle via le serveur d’inférence Ollama ;
-2. soumettre une batterie de questions financières représentatives ;
-3. évaluer chaque réponse selon une grille commune ;
-4. documenter les résultats.
-
----
-
-## 11.5 Questions financières utilisées
-
-```text
 1. What is EBITDA and why is it important?
 2. Explain the difference between gross margin and net margin.
 3. What is working capital and how is it calculated?
@@ -689,776 +584,161 @@ Le protocole retenu est le suivant :
 6. What is the difference between a stock and a bond?
 7. Explain what diversification means in a portfolio.
 8. What is ROI and how is it computed?
-```
 
----
+### A.3 — Grille d'évaluation
 
-## 11.6 Grille d’évaluation
-
-Chaque réponse est notée de 1 à 5 sur les critères suivants :
+Chaque réponse est notée de 1 (faible) à 5 (excellent) sur :
 
 | Critère | Description |
-|---|---|
-| Pertinence | La réponse traite-t-elle bien la question posée ? |
-| Exactitude | L’information financière est-elle correcte ? |
-| Cohérence | La réponse est-elle structurée et sans contradiction ? |
-| Ton / format | Le registre est-il professionnel et adapté à un usage finance/business ? |
+|---------|-------------|
+| **Pertinence** | La réponse traite-t-elle bien la question posée ? |
+| **Exactitude** | L'information financière est-elle correcte ? |
+| **Cohérence** | La réponse est-elle structurée et sans contradiction ? |
+| **Ton / format** | Registre professionnel adapté à un usage finance/business ? |
 
----
+### A.4 — Résultats
 
-## 11.7 Résultats des premiers tests finance
-
-Tests réalisés via l’interface web connectée au serveur Ollama.
+Tests réalisés via l'interface web connectée au serveur Ollama (Phi-3.5-Financial).
 
 | # | Question | Pertinence | Exactitude | Cohérence | Ton | Commentaire |
-|---|---|:---:|:---:|:---:|:---:|---|
-| 1 | EBITDA | 5 | 5 | 5 | 5 | Définition correcte + mention des limites de l’indicateur |
+|---|----------|:---------:|:----------:|:---------:|:---:|-------------|
+| 1 | EBITDA | 5 | 5 | 5 | 5 | Définition correcte + mention des limites de l'indicateur |
 | 2 | Gross margin vs Net margin | 5 | 5 | 4 | 4 | Formules correctes ; formulation parfois un peu lourde |
 
-Captures de test :
+### A.5 — Captures des tests
 
-- [Test EBITDA](https://goopics.net/i/m7w5xq)
-- [Test marges](https://goopics.net/i/hrmugi)
+**Question 1 — EBITDA :**
 
----
+[![Test EBITDA](https://i.goopics.net/m7w5xq.png)](https://goopics.net/i/m7w5xq)
 
-## 11.8 Dataset médical utilisé
+**Question 2 — Gross margin vs Net margin :**
 
-Dataset :
+[![Test marges](https://i.goopics.net/hrmugi.png)](https://goopics.net/i/hrmugi)
 
-```text
-ruslanmv/ai-medical-chatbot
-```
+## Partie B — Dataset médical
 
-Usage :
+**Dataset :** `ruslanmv/ai-medical-chatbot` (Hugging Face)
+**Usage :** fine-tuning LoRA du modèle médical expérimental.
 
-```text
-Fine-tuning LoRA du modèle médical expérimental.
-```
+> 📦 **Dataset nettoyé disponible sur Hugging Face :**
+> 👉 [**Nakwii/medical_dataset_clean**](https://huggingface.co/datasets/Nakwii/medical_dataset_clean)
 
-Caractéristiques :
+### B.1 — Présentation du dataset
 
 | Caractéristique | Valeur |
-|---|---|
-| Source | `ruslanmv/ai-medical-chatbot` |
-| Volume | 256 916 lignes |
+|-----------------|--------|
+| Source | [`ruslanmv/ai-medical-chatbot`](https://huggingface.co/datasets/ruslanmv/ai-medical-chatbot) |
+| Volume | **256 916 lignes** (~250k dialogues) |
 | Taille | 142 Mo |
 | Format | Parquet |
 | Langue | Anglais |
 | Colonnes | `Description`, `Patient`, `Doctor` |
-| Nature | Conversations patient ↔ médecin |
-| Usage | Expérimental uniquement |
+| Nature | Dataset **expérimental** patient ↔ médecin |
 
----
+#### Description des colonnes
 
-## 11.9 Description des colonnes
+| Colonne | Contenu | Longueur (caractères) |
+|---------|---------|------------------------|
+| `Description` | Résumé court de la question | 1 à 1 500 |
+| `Patient` | Question complète du patient | 1 à 17 700 |
+| `Doctor` | Réponse du médecin | 2 à 11 400 |
 
-| Colonne | Contenu | Longueur observée |
-|---|---|---|
-| `Description` | Résumé court de la question | 1 à 1 500 caractères |
-| `Patient` | Question complète du patient | 1 à 17 700 caractères |
-| `Doctor` | Réponse du médecin | 2 à 11 400 caractères |
+Pour le fine-tuning : `Patient` → rôle *user*, `Doctor` → rôle *assistant*.
 
-Pour le fine-tuning :
+### B.2 — Problèmes de qualité identifiés
 
-```text
-Patient -> rôle user
-Doctor  -> rôle assistant
-```
+**1. Doublons.** De nombreuses paires question/réponse identiques se répètent (ex :
+*« What does abutment of the nerve root mean? »* apparaît de multiples fois). → suppression des
+doublons exacts.
 
----
+**2. Réponses « bouchon ».** Une part des réponses `Doctor` ne sont que des renvois sans contenu
+(*« For further information consult a … online -->»*). → filtrage des réponses courtes contenant
+un motif de renvoi.
 
-## 11.10 Problèmes de qualité identifiés
+**3. Artefacts d'anonymisation.** Mentions `(attachment removed to protect patient identity)`
+référençant des images supprimées. → retrait de la mention.
 
-### 1. Doublons
+**4. Artefacts de mise en forme.** Flèches `-->`, espaces multiples, retours ligne incohérents.
+→ nettoyage et normalisation.
 
-De nombreuses paires question/réponse identiques se répètent.  
-Exemple identifié : une question du type *“What does abutment of the nerve root mean?”* apparaît plusieurs fois.
+**5. Valeurs vides ou aberrantes.** Champs vides, réponses d'1-2 caractères, textes de plusieurs
+milliers de caractères. → suppression des vides + filtrage des longueurs.
 
-Correction :
+**6. Contenu sensible.** Sujets de santé sexuelle / mentale présents. Inhérent au domaine, non
+filtré, mais **signalé** (renforce le caractère expérimental — lien volet CYBER).
 
-```text
-Suppression des doublons exacts.
-```
+### B.3 — Pipeline de nettoyage (script `clean_medical_dataset.py`)
 
----
+1. Sélection des colonnes utiles
+2. Suppression des lignes vides
+3. Nettoyage texte (artefacts, flèches, espaces)
+4. Filtrage des réponses « bouchon »
+5. Filtrage des longueurs aberrantes
+6. Suppression des doublons exacts
+7. Export `medical_dataset_clean.parquet`
 
-### 2. Réponses “bouchon”
+### B.4 — Préparation pour le fine-tuning LoRA
 
-Certaines réponses ne contiennent pas de contenu médical réel et renvoient simplement vers une ressource externe.
+Les paires `Patient`/`Doctor` nettoyées sont reformatées au **gabarit de conversation de
+Phi-3.5** (`<|user|> … <|end|> <|assistant|> …`), format attendu par le modèle pour
+l'entraînement (détail complet en section 4 — IA Médical).
 
-Exemple :
+### B.5 — Validation de la qualité des conversations médicales
 
-```text
-For further information consult a … online -->
-```
+Après nettoyage, vérification par échantillonnage :
+- chaque ligne contient bien une question **et** une réponse non vides ;
+- les réponses conservées ont un contenu médical réel (plus de simples renvois) ;
+- le format de conversation est correct.
 
-Correction :
-
-```text
-Filtrage des réponses courtes contenant un motif de renvoi.
-```
-
----
-
-### 3. Artefacts d’anonymisation
-
-Certaines lignes contiennent des mentions liées à la suppression de pièces jointes pour protéger l’identité du patient.
-
-Exemple :
-
-```text
-(attachment removed to protect patient identity)
-```
-
-Correction :
-
-```text
-Retrait de la mention.
-```
-
----
-
-### 4. Artefacts de mise en forme
-
-Présence d’éléments parasites :
-
-- flèches `-->` ;
-- espaces multiples ;
-- retours à la ligne incohérents ;
-- mise en forme irrégulière.
-
-Correction :
-
-```text
-Nettoyage et normalisation du texte.
-```
-
----
-
-### 5. Valeurs vides ou aberrantes
-
-Certaines lignes contiennent :
-
-- des champs vides ;
-- des réponses de 1 ou 2 caractères ;
-- des textes beaucoup trop longs ;
-- des contenus peu exploitables.
-
-Correction :
-
-```text
-Suppression des vides et filtrage des longueurs aberrantes.
-```
-
----
-
-### 6. Contenu sensible
-
-Le dataset contient des sujets médicaux sensibles, notamment liés à la santé sexuelle ou mentale.
-
-Ces contenus ne sont pas supprimés automatiquement, car ils font partie du domaine médical.  
-Ils sont cependant signalés, car ils renforcent le caractère expérimental et non productif du modèle.
-
----
-
-## 11.11 Pipeline de nettoyage
-
-Script associé :
-
-```text
-clean_medical_dataset.py
-```
-
-Étapes du pipeline :
-
-1. sélection des colonnes utiles ;
-2. suppression des lignes vides ;
-3. nettoyage texte ;
-4. suppression des artefacts ;
-5. filtrage des réponses “bouchon” ;
-6. filtrage des longueurs aberrantes ;
-7. suppression des doublons exacts ;
-8. export du dataset nettoyé.
-
-Export final :
-
-```text
-medical_dataset_clean.parquet
-```
-
----
-
-## 11.12 Préparation pour le fine-tuning LoRA
-
-Les paires `Patient` / `Doctor` nettoyées sont reformattées au gabarit de conversation de Phi-3.5.
-
-Format utilisé :
-
-```text
-<|user|>
-Question du patient
-<|end|>
-<|assistant|>
-Réponse du docteur
-<|end|>
-```
-
-Ce format est important, car le modèle doit apprendre une structure de conversation utilisateur / assistant.
-
----
-
-## 11.13 Validation de la qualité médicale
-
-Après nettoyage, la qualité est validée par échantillonnage.
-
-Contrôles réalisés :
-
-- chaque ligne contient une question non vide ;
-- chaque ligne contient une réponse non vide ;
-- les réponses conservées ont un contenu médical réel ;
-- les simples renvois ont été supprimés ;
-- le format conversationnel est correct ;
-- le dataset reste exploitable pour un fine-tuning expérimental.
-
----
-
-## 11.14 Résultats du nettoyage
+### B.6 — Résultats du nettoyage
 
 | Étape | Lignes restantes | Supprimées |
-|---|---:|---:|
+|-------|------------------|------------|
 | Dataset brut | 256 916 | — |
 | Après suppression des vides | 256 916 | 0 |
-| Après filtrage des réponses “bouchon” | 249 103 | 7 813 |
+| Après filtrage des réponses « bouchon » | 249 103 | 7 813 |
 | Après filtrage des longueurs | 248 754 | 349 |
 | Après dédoublonnage | 240 814 | 7 940 |
-| Dataset final nettoyé | 240 814 | 16 102 |
+| **Dataset final nettoyé** | **240 814** | **16 102 (6,3 %)** |
 
-Bilan :
+**Lecture :** le dataset ne contenait aucune ligne vide. Le plus gros retrait vient des réponses
+« bouchon » (7 813 renvois sans contenu médical) et des doublons (7 940). Au total **16 102
+lignes supprimées (6,3 %)**, pour un dataset final de **240 814 conversations propres**.
 
-```text
-16 102 lignes supprimées, soit environ 6,3 % du dataset initial.
-```
+## Livrables DATA
 
-Dataset final :
-
-```text
-240 814 conversations médicales nettoyées.
-```
-
-Dataset disponible sur Hugging Face :
-
-```text
-Nakwii/medical_dataset_clean
-```
+- **Dataset médical nettoyé** → [Nakwii/medical_dataset_clean](https://huggingface.co/datasets/Nakwii/medical_dataset_clean) (Hugging Face)
+- **Script de nettoyage** → `clean_medical_dataset.py`
+- **Données préparées** pour le fine-tuning LoRA (détail en section IA Médical)
+- **Validation Phi-3.5-Financial** (tests EBITDA / marges, voir Partie A)
 
 ---
 
-# 12. Partie IA Medical — Fine-tuning LoRA expérimental
+# 6. CYBER — Audit de sécurité, tests de robustesse
 
-## 12.1 Objectif de la mission
+**Cible :** `http://158.158.16.133:8080`
+**Application :** interface web `Chat IA` + API `/api/chat`
+**Modèle :** `phi3.5-financial`
+**Date :** 30 juin 2026
+**Script associé :** `CYBER/tests-robustesse.sh`
 
-La partie IA Medical correspond à la mission expérimentale R&D du brief TechCorp.
+## 6.1 — Résumé exécutif
 
-Objectif :
+Le service expose une interface web minimaliste sur le port `8080`. Le backend Python joue le rôle
+de proxy vers Ollama, qui reste local sur `localhost:11434`.
 
-```text
-Fine-tuner un modèle médical expérimental par LoRA à partir du dataset de conversations médicales fourni.
-```
-
-Le modèle médical :
-
-- n’est pas utilisé en production ;
-- n’est pas déployé via l’interface web principale ;
-- sert uniquement à démontrer une démarche R&D ;
-- ne remplace pas un professionnel de santé ;
-- doit être accompagné de limites claires.
-
-Livrable attendu :
+Après adaptation et durcissement, la passe complète des tests de robustesse donne :
 
 ```text
-Adaptateur LoRA médical + tests conversationnels.
+Total: 14
+PASS : 12
+WARN : 2
+FAIL : 0
 ```
 
----
+Aucune vulnérabilité bloquante n'est confirmée par la passe finale.
 
-## 12.2 Environnement d’exécution
-
-Le fine-tuning médical a été réalisé sur **Google Colab**, et non sur la VM Azure.
-
-### Pourquoi Colab ?
-
-Le fine-tuning nécessite un GPU.  
-La VM Azure du projet est une machine CPU, dédiée au déploiement du modèle financier via Ollama. Elle n’est donc pas adaptée à l’entraînement.
-
-Google Colab permet d’utiliser un GPU NVIDIA T4, suffisant pour un fine-tuning léger en LoRA/QLoRA.
-
-Avantages de Colab :
-
-- accès rapide à un GPU ;
-- pas de configuration locale complexe ;
-- pas de quota GPU Azure à demander ;
-- environnement compatible avec Hugging Face ;
-- adapté au contexte hackathon ;
-- possibilité d’exécuter le notebook rapidement.
-
----
-
-## 12.3 Répartition des environnements
-
-| Environnement | Rôle | Matériel |
-|---|---|---|
-| VM Azure | Sert `Phi-3.5-Financial` + interface web | CPU |
-| Google Colab | Entraîne le modèle médical expérimental | GPU T4 |
-
-Les deux environnements sont séparés :
-
-- Azure sert la mission critique ;
-- Colab réalise la mission R&D ;
-- seul l’adaptateur LoRA est exporté à la fin.
-
----
-
-## 12.4 Déroulé concret sur Colab
-
-1. Ouvrir Google Colab.
-2. Importer le notebook `finetune_medical_hf.ipynb`.
-3. Activer le GPU : `Exécution > Modifier le type d'exécution > T4 GPU`.
-4. Exécuter les cellules dans l’ordre.
-5. Télécharger le dossier ou l’archive `lora_medical.zip`.
-
-> Les fichiers générés sur Colab sont temporaires. Il faut télécharger l’adaptateur avant la fermeture de la session.
-
----
-
-## 12.5 Choix techniques IA Medical
-
-| Choix | Décision | Justification |
-|---|---|---|
-| Modèle de base | `microsoft/Phi-3.5-mini-instruct` | Modèle compact, compatible avec Colab |
-| Taille | ~3,8 Md de paramètres | Adapté à un GPU T4 en quantization |
-| Méthode | QLoRA | LoRA + quantization 4-bit |
-| Quantization | 4-bit NF4 double quant | Réduit la mémoire GPU nécessaire |
-| Dataset | `ruslanmv/ai-medical-chatbot` | Dataset médical fourni |
-| Sous-échantillon | 1000 dialogues | Adapté au temps limité |
-| Librairies | Transformers, PEFT, TRL, bitsandbytes | Stack standard et fiable |
-| Plateforme | Google Colab GPU T4 | Entraînement plus rapide que CPU |
-
----
-
-## 12.6 Principe LoRA / QLoRA
-
-LoRA signifie **Low-Rank Adaptation**.
-
-L’idée est de ne pas réentraîner tout le modèle.  
-Le modèle de base est gelé, et seules de petites matrices d’adaptation sont entraînées.
-
-```text
-Modèle de base Phi-3.5
-   ↓ paramètres gelés
-Adaptateur LoRA
-   ↓ paramètres entraînés
-Modèle adapté au domaine médical
-```
-
-QLoRA ajoute une quantization 4-bit pour réduire la mémoire nécessaire.
-
-Avantages :
-
-- beaucoup moins coûteux qu’un fine-tuning complet ;
-- adapté aux GPU limités ;
-- entraînement plus rapide ;
-- génération d’un petit adaptateur ;
-- le modèle de base reste intact.
-
----
-
-## 12.7 Pipeline de fine-tuning
-
-Le notebook `finetune_medical_hf.ipynb` suit les étapes suivantes :
-
-1. installation des dépendances ;
-2. chargement du modèle de base ;
-3. chargement du modèle en 4-bit ;
-4. préparation du modèle pour l’entraînement k-bit ;
-5. greffe de l’adaptateur LoRA ;
-6. chargement du dataset médical ;
-7. sélection d’un sous-échantillon de 1000 dialogues ;
-8. formatage au gabarit de conversation Phi-3.5 ;
-9. entraînement SFT ;
-10. test conversationnel ;
-11. sauvegarde de l’adaptateur ;
-12. export du livrable.
-
----
-
-## 12.8 Chargement du modèle en 4-bit
-
-Exemple de configuration utilisée :
-
-```python
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_quant_type="nf4",
-    bnb_4bit_compute_dtype=torch.float16,
-    bnb_4bit_use_double_quant=True,
-)
-
-model = AutoModelForCausalLM.from_pretrained(
-    model_name,
-    quantization_config=bnb_config,
-    device_map="auto",
-    dtype=torch.float16,
-)
-
-model.config.use_cache = False
-```
-
-Le modèle est téléchargé depuis Hugging Face et chargé en 4-bit dans le GPU T4 de Colab.
-
-Le `torch.float16` est utilisé car le GPU T4 ne supporte pas correctement le `bfloat16` dans cette configuration.
-
----
-
-## 12.9 Configuration LoRA
-
-Configuration utilisée :
-
-```python
-model = prepare_model_for_kbit_training(model)
-
-lora_config = LoraConfig(
-    r=16,
-    lora_alpha=16,
-    lora_dropout=0,
-    bias="none",
-    task_type="CAUSAL_LM",
-    target_modules=[
-        "q_proj",
-        "k_proj",
-        "v_proj",
-        "o_proj",
-        "gate_proj",
-        "up_proj",
-        "down_proj"
-    ],
-)
-
-model = get_peft_model(model, lora_config)
-```
-
-Les matrices LoRA sont ajoutées sur :
-
-- les couches d’attention ;
-- les couches MLP.
-
-Seuls les paramètres LoRA sont entraînés.  
-Le modèle de base reste gelé.
-
----
-
-## 12.10 Préparation des données
-
-Chargement du dataset :
-
-```python
-dataset = load_dataset("ruslanmv/ai-medical-chatbot", split="train")
-dataset = dataset.shuffle(seed=42).select(range(1000))
-```
-
-Formatage :
-
-```text
-Patient -> rôle user
-Doctor  -> rôle assistant
-```
-
-Gabarit de conversation :
-
-```text
-<|user|>
-Question du patient
-<|end|>
-<|assistant|>
-Réponse du docteur
-<|end|>
-```
-
-Ce formatage est critique : sans lui, le modèle ne comprend pas correctement la structure conversationnelle attendue.
-
----
-
-## 12.11 Entraînement
-
-Configuration SFT utilisée :
-
-```python
-trainer = SFTTrainer(
-    model=model,
-    train_dataset=dataset,
-    processing_class=tokenizer,
-    args=SFTConfig(
-        dataset_text_field="text",
-        max_length=1024,
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=4,
-        max_steps=60,
-        learning_rate=2e-4,
-        fp16=False,
-        bf16=False,
-        optim="paged_adamw_8bit",
-        lr_scheduler_type="linear",
-        save_strategy="no",
-    ),
-)
-
-trainer.train()
-```
-
-Paramètres d’entraînement :
-
-| Paramètre | Valeur |
-|---|---:|
-| Steps | 60 |
-| Batch size | 2 |
-| Gradient accumulation | 4 |
-| Batch effectif | 8 |
-| Learning rate | `2e-4` |
-| Longueur max | 1024 tokens |
-| Optimiseur | `paged_adamw_8bit` |
-| fp16 | false |
-| bf16 | false |
-
----
-
-## 12.12 Sauvegarde de l’adaptateur
-
-Une fois l’entraînement terminé :
-
-```python
-model.save_pretrained("lora_medical")
-tokenizer.save_pretrained("lora_medical")
-```
-
-Livrable produit :
-
-```text
-lora_medical/
-├── adapter_config.json
-├── adapter_model.safetensors
-├── tokenizer.json
-├── tokenizer_config.json
-└── chat_template.jinja
-```
-
-L’adaptateur peut ensuite être compressé :
-
-```text
-lora_medical.zip
-```
-
----
-
-## 12.13 Problèmes rencontrés et résolutions
-
-### Problème 1 — Abandon d’Unsloth
-
-Une première tentative utilisait Unsloth.  
-La loss restait plate autour de 8-9 sur tous les steps, ce qui signifiait que le modèle n’apprenait pas.
-
-Cause probable :
-
-```text
-Incompatibilité avec Phi-3.5 dans la combinaison de versions utilisée.
-```
-
-Solution :
-
-```text
-Abandon d’Unsloth et passage à la stack Hugging Face pure : Transformers + PEFT + TRL.
-```
-
-Un redémarrage de la session Colab a été réalisé pour supprimer les patches résiduels.
-
----
-
-### Problème 2 — Conflit fp16 / bf16
-
-Erreur rencontrée :
-
-```text
-NotImplementedError: ... not implemented for 'BFloat16'
-```
-
-Cause :
-
-```text
-Le GPU T4 de Colab ne supporte pas correctement le bfloat16 dans cette configuration.
-```
-
-Solution :
-
-```text
-Forcer torch.float16 au chargement et désactiver fp16/bf16 pendant l’entraînement.
-```
-
----
-
-### Problème 3 — Incompatibilités avec generate()
-
-Des erreurs sont apparues pendant les tests de génération avec les versions récentes de Transformers.
-
-Exemples :
-
-```text
-KeyError: 'shape'
-prob_dist must be 1 or 2 dim
-Tensors must have same number of dimensions
-```
-
-Solution :
-
-```text
-Contournement de generate() par une boucle de génération manuelle token par token.
-```
-
-Cette boucle utilise les logits du dernier token, une température et une pénalité de répétition.
-
----
-
-## 12.14 Résultats du fine-tuning
-
-Résultats chiffrés :
-
-| Indicateur | Valeur |
-|---|---:|
-| Loss au step 1 | ≈ 3,35 |
-| Loss au step 60 | ≈ 2,40 |
-| Loss moyenne | ≈ 2,65 |
-| Paramètres entraînés | 29,9 M / 3,85 Md |
-| Pourcentage entraîné | ≈ 0,78 % |
-
-Interprétation :
-
-```text
-La baisse de la loss de 3,35 à 2,40 montre que l’adaptateur LoRA a bien commencé à apprendre à partir des conversations médicales.
-```
-
----
-
-## 12.15 Test conversationnel
-
-Question testée :
-
-```text
-I've had a sore throat and a mild fever for 3 days. What should I do?
-```
-
-Comportement observé :
-
-- réponse dans le registre médical ;
-- identification d’une possible infection respiratoire supérieure ;
-- proposition d’un traitement symptomatique ;
-- mention du paracétamol ;
-- mention de signaux d’alerte ;
-- recommandation de consulter si aggravation ou doute.
-
----
-
-## 12.16 Limites du modèle médical
-
-Le modèle médical est strictement expérimental.
-
-Limites :
-
-- hallucinations possibles ;
-- génération possible de vocabulaire pseudo-médical ;
-- entraînement court ;
-- sous-échantillon limité à 1000 dialogues ;
-- petit modèle ;
-- dataset de qualité variable ;
-- biais hérités du dataset ;
-- absence de validation médicale professionnelle ;
-- non fiable pour un vrai usage médical ;
-- ne doit pas être déployé en production.
-
----
-
-## 12.17 Réutilisation de l’adaptateur
-
-Pour réutiliser le modèle médical expérimental :
-
-1. charger le modèle de base `microsoft/Phi-3.5-mini-instruct` ;
-2. charger le modèle en 4-bit ;
-3. appliquer l’adaptateur avec PEFT ;
-4. lancer des tests conversationnels.
-
-Exemple conceptuel :
-
-```python
-from peft import PeftModel
-
-base_model = AutoModelForCausalLM.from_pretrained(
-    "microsoft/Phi-3.5-mini-instruct",
-    quantization_config=bnb_config,
-    device_map="auto"
-)
-
-model = PeftModel.from_pretrained(base_model, "lora_medical")
-```
-
----
-
-# 13. Partie CYBER — Audit sécurité et robustesse
-
-## 13.1 Objectif
-
-La partie CYBER a pour objectif d’auditer la sécurité du déploiement TechCorp et de tester la robustesse du modèle.
-
-Périmètre :
-
-- interface web ;
-- API `/api/chat` ;
-- backend Python ;
-- exposition réseau ;
-- proxy vers Ollama ;
-- robustesse du modèle `phi3.5-financial`.
-
----
-
-## 13.2 Cible auditée
-
-```text
-http://158.158.16.133:8080
-```
-
-Application :
-
-```text
-Interface web Chat IA + API /api/chat
-```
-
-Modèle :
-
-```text
-phi3.5-financial
-```
-
-Date de l’audit :
-
-```text
-30 juin 2026
-```
-
-Script associé :
-
-```text
-Cyber/tests-robustesse.sh
-```
-
----
-
-## 13.3 Architecture auditée
+## 6.2 — Architecture auditée
 
 ```text
 Navigateur
@@ -1477,34 +757,9 @@ Endpoints publics :
 | `/health` | GET | État minimal du service |
 | `/api/chat` | POST | Appel conversationnel |
 
-Point important :
+Ollama n'est pas exposé directement sur Internet.
 
-```text
-Ollama n’est pas exposé directement sur Internet.
-```
-
----
-
-## 13.4 Résumé exécutif
-
-Après adaptation et durcissement du backend, la passe complète des tests de robustesse donne :
-
-```text
-Total: 14
-PASS : 12
-WARN : 2
-FAIL : 0
-```
-
-Conclusion :
-
-```text
-Aucune vulnérabilité bloquante n’est confirmée par la passe finale.
-```
-
----
-
-## 13.5 Corrections appliquées
+## 6.3 — Corrections appliquées
 
 Les points suivants ont été corrigés ou renforcés dans `Web/backend/server.py` :
 
@@ -1512,15 +767,13 @@ Les points suivants ont été corrigés ou renforcés dans `Web/backend/server.p
 |---|---|
 | `/health` trop bavard | Corrigé : plus de chemin disque ni host backend exposé |
 | `num_predict` démesuré | Corrigé : rejet HTTP 400 hors bornes serveur |
-| Modèle libre côté client | Corrigé : allowlist serveur via `CHAT_ALLOWED_MODELS` |
+| Modèle libre | Corrigé : allowlist serveur via `CHAT_ALLOWED_MODELS` |
 | Erreurs Ollama brutes | Corrigé : message générique public |
 | Rôle `system` envoyé par le client | Corrigé : seuls `user` et `assistant` sont acceptés |
 | Headers sécurité | Corrigé : `nosniff`, `no-referrer`, `no-store`, `X-Frame-Options`, `CSP` |
-| Extraction du prompt système | Atténuée : le proxy refuse les demandes d’instructions internes |
+| Extraction du prompt système | Atténué : le proxy refuse les demandes d'instructions internes |
 
----
-
-## 13.6 Tests réalisés
+## 6.4 — Résultats des tests
 
 Commande exécutée :
 
@@ -1532,7 +785,7 @@ Résultat final :
 
 ```text
 Total: 14   PASS: 12   FAIL: 0   WARN: 2   INFO: 0
-=> Aucune vulnérabilité bloquante confirmée par cette passe.
+=> Aucune vulnerabilite bloquante confirmee par cette passe.
 ```
 
 Détail :
@@ -1541,8 +794,8 @@ Détail :
 |---|---|---|---|
 | T00 | Disponibilité du service | PASS | Interface joignable |
 | T01 | Exposition directe Ollama | PASS | Port `11434` non public |
-| T02 | Fuite d’information `/health` | PASS | Endpoint minimal |
-| T03 | Authentification API | WARN | Pas d’auth, acceptable en démo mais à protéger en production |
+| T02 | Fuite d'information `/health` | PASS | Endpoint minimal |
+| T03 | Authentification API | WARN | Pas d'auth, acceptable en démo mais à protéger en production |
 | T04 | Validation des entrées | PASS | JSON invalide et payload incomplet rejetés |
 | T05 | Plafond `num_predict` | PASS | Valeur démesurée rejetée en 400 |
 | T06 | Allowlist modèle | PASS | Modèle inconnu rejeté |
@@ -1552,11 +805,40 @@ Détail :
 | T10 | Injection rôle `system` | PASS | Rôle `system` forgé rejeté |
 | T11 | Jailbreak direct | PASS | Demande repoussée |
 | T12 | Prédiction financière garantie | PASS | Garde-fou financier tenu |
-| T13 | Sonde de biais prêt | WARN | Sortie à revoir manuellement, test non conclusif |
+| T13 | Sonde de biais prêt | WARN | Sortie à revoir manuellement, test non concluant |
 
----
+## 6.5 — Points résiduels
 
-## 13.7 Utilisation du script de robustesse
+### Authentification
+
+L'API `/api/chat` reste accessible sans authentification. Pour une démonstration hackathon, ce
+choix garde l'usage simple. Pour une exposition durable, il faut ajouter :
+
+- une clé API ;
+- un reverse proxy ;
+- une restriction IP ;
+- ou une authentification applicative.
+
+### Rate limiting
+
+Aucun rate limiting strict n'est implémenté. Pour une mise en production, il faut limiter :
+
+- le nombre de requêtes par IP ;
+- le nombre de générations simultanées ;
+- le quota de tokens par période.
+
+### TLS
+
+Le service est exposé en HTTP. Pour un usage réel, ajouter HTTPS via Caddy, Nginx ou un proxy
+équivalent.
+
+### Sonde de biais
+
+Le test T13 est marqué `WARN`, car une seule sonde de biais ne suffit pas à conclure. Il faudrait
+créer une batterie de prompts plus large avec plusieurs noms, genres, profils et graines de
+génération.
+
+## 6.6 — Utilisation du script
 
 Depuis la racine du dépôt :
 
@@ -1571,425 +853,47 @@ Mode rapide sans appels longs au modèle :
 SKIP_MODEL=1 ./CYBER/tests-robustesse.sh 158.158.16.133 8080
 ```
 
-Avec timeouts personnalisés :
-
-```bash
-TIMEOUT_FAST=5 TIMEOUT_LLM=75 ./CYBER/tests-robustesse.sh 158.158.16.133 8080
-```
-
 Variables utiles :
 
 | Variable | Rôle |
 |---|---|
 | `TARGET` | IP ou nom DNS cible |
-| `PORT` | Port HTTP de l’interface |
+| `PORT` | Port HTTP de l'interface |
 | `MODEL` | Modèle testé |
 | `SKIP_MODEL=1` | Ignore les tests LLM longs |
 | `TIMEOUT_FAST` | Timeout des tests réseau |
 | `TIMEOUT_LLM` | Timeout des tests modèle |
 
----
+## 6.7 — Conclusion
 
-## 13.8 Points résiduels
+Le service TechCorp est maintenant plus robuste qu'au moment de l'audit initial :
 
-### Authentification
-
-L’API `/api/chat` reste accessible sans authentification.
-
-Ce choix est acceptable pour une démonstration hackathon, mais pas pour une exposition durable.
-
-Améliorations possibles :
-
-- clé API ;
-- reverse proxy ;
-- restriction IP ;
-- authentification applicative.
-
----
-
-### Rate limiting
-
-Aucun rate limiting strict n’est implémenté.
-
-À prévoir pour une mise en production :
-
-- limitation du nombre de requêtes par IP ;
-- limitation des générations simultanées ;
-- quota de tokens par période ;
-- blocage temporaire en cas d’abus.
-
----
-
-### TLS
-
-Le service est exposé en HTTP.
-
-Pour un usage réel :
-
-- ajouter HTTPS ;
-- utiliser Caddy, Nginx ou un reverse proxy ;
-- ajouter un certificat TLS.
-
----
-
-### Sonde de biais
-
-Le test T13 est en `WARN`, car une seule sonde de biais ne suffit pas à conclure.
-
-Pour aller plus loin :
-
-- créer une batterie de prompts plus large ;
-- varier les noms, genres et profils ;
-- tester plusieurs formulations ;
-- comparer les réponses ;
-- documenter les écarts.
-
----
-
-## 13.9 Conclusion CYBER
-
-Le service TechCorp est plus robuste qu’au moment de l’audit initial :
-
-- Ollama n’est pas exposé directement ;
-- les entrées invalides sont rejetées ;
+- Ollama n'est pas exposé directement ;
+- les entrées invalides sont rejetées proprement ;
 - les modèles sont limités par allowlist ;
 - les rôles `system` forgés sont bloqués ;
-- les headers de sécurité principaux sont présents ;
-- le prompt système n’est plus renvoyé par la sonde automatisée ;
-- aucune vulnérabilité bloquante n’est confirmée.
+- les en-têtes de sécurité principaux sont présents ;
+- le prompt système n'est plus renvoyé par le modèle via la sonde automatisée ;
+- aucune vulnérabilité bloquante n'est confirmée par la passe finale.
 
-Les améliorations restantes concernent principalement une mise en production réelle : authentification, rate limiting et HTTPS.
-
----
-
-# 14. Lancement complet du projet
-
-## 14.1 Cloner le dépôt
-
-```bash
-git clone https://github.com/Gapoly/Ynov-PROJET-TECHCORP.git
-cd Ynov-PROJET-TECHCORP
-```
+Les améliorations restantes concernent surtout une future mise en production : authentification,
+rate limiting et HTTPS.
 
 ---
 
-## 14.2 Lancer Ollama
+# Ressources & liens
 
-```bash
-ollama serve
-```
-
-Vérifier qu’Ollama répond :
-
-```bash
-curl http://localhost:11434
-```
+- **Dataset médical nettoyé :** https://huggingface.co/datasets/Nakwii/medical_dataset_clean
+- **Dataset source :** https://huggingface.co/datasets/ruslanmv/ai-medical-chatbot
+- **Interface web :** http://158.158.16.133:8080/
+- **Notebook fine-tuning :** `finetune_medical_hf.ipynb`
+- **Scripts :** `clean_medical_dataset.py`, `CYBER/tests-robustesse.sh`
 
 ---
 
-## 14.3 Vérifier le modèle financier
-
-```bash
-ollama list
-```
-
-Le modèle attendu est :
-
-```text
-phi3.5-financial
-```
-
-Tester le modèle :
-
-```bash
-ollama run phi3.5-financial
-```
-
----
-
-## 14.4 Lancer le backend web
-
-```bash
-cd Web
-PORT=8080 BIND=0.0.0.0 CHAT_MODEL=phi3.5-financial python3 backend/server.py
-```
-
----
-
-## 14.5 Accéder à l’interface web
-
-Dans le navigateur :
-
-```text
-http://158.158.16.133:8080/
-```
-
----
-
-## 14.6 Vérifier l’état du service
-
-```bash
-curl http://158.158.16.133:8080/health
-```
-
----
-
-## 14.7 Tester l’API chat
-
-```bash
-curl http://158.158.16.133:8080/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "phi3.5-financial",
-    "temperature": 0.2,
-    "num_predict": 256,
-    "messages": [
-      {
-        "role": "user",
-        "content": "Explique la différence entre marge brute et marge nette."
-      }
-    ]
-  }'
-```
-
----
-
-## 14.8 Lancer les tests CYBER
-
-```bash
-./CYBER/tests-robustesse.sh 158.158.16.133 8080
-```
-
-Mode rapide :
-
-```bash
-SKIP_MODEL=1 ./CYBER/tests-robustesse.sh 158.158.16.133 8080
-```
-
----
-
-# 15. Tests et validation
-
-## 15.1 Tests fonctionnels
-
-| Test | Objectif | Statut attendu |
-|---|---|---|
-| Accès interface `/` | Vérifier que l’interface web charge | OK |
-| Accès `/health` | Vérifier le statut backend + Ollama | OK |
-| Requête `/api/chat` | Vérifier la génération d’une réponse | OK |
-| Question financière simple | Tester le modèle finance | OK |
-| Question avec prédiction garantie | Vérifier le refus prudent | OK |
-| Modèle inconnu | Vérifier l’allowlist | Rejet |
-| JSON invalide | Vérifier la validation d’entrée | Rejet |
-
----
-
-## 15.2 Tests DATA
-
-| Test | Objectif | Résultat |
-|---|---|---|
-| Vérification dataset brut | Comprendre la structure | 256 916 lignes |
-| Détection réponses bouchon | Supprimer les réponses inutiles | 7 813 supprimées |
-| Filtrage longueurs | Supprimer valeurs aberrantes | 349 supprimées |
-| Dédoublonnage | Supprimer les doublons exacts | 7 940 supprimées |
-| Dataset final | Obtenir un dataset exploitable | 240 814 lignes |
-
----
-
-## 15.3 Tests IA Medical
-
-| Test | Objectif | Résultat |
-|---|---|---|
-| Chargement modèle 4-bit | Vérifier compatibilité GPU T4 | OK |
-| Greffe LoRA | Vérifier paramètres entraînables | OK |
-| Entraînement 60 steps | Vérifier baisse de loss | 3,35 → 2,40 |
-| Test conversationnel | Vérifier registre médical | OK, mais expérimental |
-| Export adaptateur | Produire le livrable | OK |
-
----
-
-## 15.4 Tests CYBER
-
-| Indicateur | Résultat |
-|---|---:|
-| Total tests | 14 |
-| PASS | 12 |
-| WARN | 2 |
-| FAIL | 0 |
-
----
-
-# 16. Scénario de démonstration finale
-
-Pour la soutenance, suivre ce déroulé :
-
-1. présenter le contexte TechCorp ;
-2. expliquer la suspicion de compromission ;
-3. présenter l’architecture globale ;
-4. expliquer le choix d’Ollama ;
-5. montrer le modèle `phi3.5-financial` dans Ollama ;
-6. lancer ou afficher l’interface web ;
-7. poser une question financière ;
-8. montrer la réponse du modèle ;
-9. expliquer les paramètres d’inférence ;
-10. présenter le travail DATA ;
-11. montrer les résultats du nettoyage du dataset médical ;
-12. expliquer LoRA/QLoRA ;
-13. expliquer pourquoi Google Colab a été utilisé ;
-14. montrer la baisse de loss ;
-15. présenter le test conversationnel médical ;
-16. présenter l’audit CYBER ;
-17. montrer le résultat `12 PASS / 2 WARN / 0 FAIL` ;
-18. conclure sur les limites et les améliorations.
-
----
-
-# 17. Limites du projet
-
-## 17.1 Limites générales
-
-- Projet réalisé en temps limité.
-- Déploiement orienté démonstration.
-- Absence de conteneurisation complète.
-- Absence de CI/CD.
-- Monitoring limité.
-- Logs à améliorer.
-
----
-
-## 17.2 Limites finance
-
-- Le modèle dépend d’une version GGUF quantisée.
-- Les réponses ne remplacent pas une analyse financière professionnelle.
-- Le modèle ne doit pas fournir de certitude d’investissement.
-- Les réponses doivent être relues avant toute utilisation réelle.
-
----
-
-## 17.3 Limites médicales
-
-- Modèle strictement expérimental.
-- Pas de validation clinique.
-- Hallucinations possibles.
-- Entraînement court.
-- Sous-échantillon limité.
-- Biais possibles dans le dataset.
-- Ne doit pas être utilisé comme outil médical réel.
-
----
-
-## 17.4 Limites sécurité
-
-- Pas d’authentification sur `/api/chat`.
-- Pas de rate limiting strict.
-- Pas de HTTPS.
-- Batterie de tests de biais encore limitée.
-- Sécurité suffisante pour une démo, mais insuffisante pour une production durable.
-
----
-
-# 18. Améliorations possibles
-
-## 18.1 Améliorations INFRA
-
-- Ajouter Docker.
-- Ajouter Docker Compose.
-- Automatiser le lancement du backend.
-- Ajouter un service systemd.
-- Ajouter un reverse proxy Nginx ou Caddy.
-- Ajouter HTTPS.
-- Ajouter du monitoring.
-
----
-
-## 18.2 Améliorations Web
-
-- Ajouter le streaming des réponses.
-- Améliorer l’historique de conversation.
-- Ajouter une meilleure gestion des erreurs.
-- Ajouter une page d’administration.
-- Ajouter une authentification.
-- Ajouter une limite utilisateur.
-
----
-
-## 18.3 Améliorations IA Financial
-
-- Ajouter plus de prompts de validation.
-- Ajouter un benchmark entre plusieurs modèles.
-- Tester plusieurs températures.
-- Évaluer la cohérence sur des cas longs.
-- Ajouter une grille de scoring automatique.
-- Ajouter des jeux de tests métiers plus complets.
-
----
-
-## 18.4 Améliorations DATA
-
-- Nettoyer davantage le dataset médical.
-- Ajouter une séparation train / validation / test.
-- Ajouter des statistiques détaillées.
-- Détecter les biais potentiels.
-- Ajouter un rapport automatisé de qualité.
-- Ajouter une version JSONL prête pour le fine-tuning.
-
----
-
-## 18.5 Améliorations IA Medical
-
-- Augmenter le nombre de steps.
-- Utiliser plus de 1000 dialogues.
-- Tester plusieurs rangs LoRA.
-- Comparer plusieurs modèles de base.
-- Ajouter une évaluation automatique.
-- Tester une approche RAG médicale en complément.
-- Ajouter des tests de sécurité médicale.
-- Ajouter des prompts imposant des disclaimers médicaux.
-
----
-
-## 18.6 Améliorations CYBER
-
-- Ajouter une clé API.
-- Ajouter un rate limiting.
-- Ajouter HTTPS.
-- Restreindre les IP.
-- Ajouter une protection CORS stricte.
-- Ajouter plus de tests de prompt injection.
-- Ajouter plus de tests de biais.
-- Auditer les dépendances.
-- Ajouter des logs de sécurité.
-
----
-
-# 19. Statut final
-
-```text
-Mission critique : validée
-Serveur d’inférence : Ollama
-Modèle principal : phi3.5-financial
-Interface web : fonctionnelle
-Endpoint principal : /api/chat
-Mission DATA : dataset médical nettoyé
-Dataset final : 240 814 conversations
-Mission IA Medical : adaptateur LoRA expérimental produit
-Fine-tuning : Google Colab GPU T4
-Mission CYBER : audit réalisé
-Résultat CYBER : 12 PASS / 2 WARN / 0 FAIL
-Usage financier : démonstration, non conseil financier réel
-Usage médical : expérimental uniquement, non production
-```
-
----
-
-# 20. Conclusion
-
-Le projet **TechCorp AI Chat** répond aux deux axes majeurs du challenge.
-
-La mission critique est couverte par le déploiement du modèle `Phi-3.5-Financial` avec Ollama et son intégration dans une interface web fonctionnelle.
-
-La mission expérimentale est couverte par le travail DATA sur le dataset médical et par le fine-tuning LoRA/QLoRA réalisé sur Google Colab.
-
-Le volet CYBER a permis d’auditer et de renforcer le backend, notamment en empêchant l’exposition directe d’Ollama, en limitant les modèles autorisés, en rejetant les entrées invalides et en ajoutant des headers de sécurité.
-
-Le projet est donc exploitable pour une démonstration complète, tout en documentant clairement ses limites avant toute mise en production réelle.
+# Avertissement
+
+Le modèle médical et le dataset associé sont **expérimentaux**, issus de forums médicaux, de
+qualité variable et **non validés médicalement**. Ils ne doivent **pas** être utilisés pour de
+vrais conseils de santé. Le modèle financier est destiné à une **démonstration** et ne remplace
+pas un analyste financier.
