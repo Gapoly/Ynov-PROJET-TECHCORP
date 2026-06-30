@@ -6,12 +6,14 @@ interface web de chat professionnelle, avec en complément une mission R&D de fi
 modèle médical expérimental.
 
 ---
-Vazquez Angelo
-Panariello Matteo
-Skovgaard Norman
-Corsyn Ryan
-Bouchouareb Eddy
-GUILBAUD Maxime
+Membres: 
+
+- Vazquez Angelo
+- Panariello Matteo
+- Skovgaard Norman
+- Corsyn Ryan
+- Bouchouareb Eddy
+- GUILBAUD Maxime
 
 
 
