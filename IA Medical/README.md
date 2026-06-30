@@ -13,8 +13,6 @@ Le brief précise explicitement que ce modèle **reste expérimental** : il n'a 
 déployé en production, contrairement au modèle financier. Le livrable attendu est donc le
 **modèle médical fine-tuné (adaptateur LoRA)** accompagné de ses tests.
 
-> ⚠️ **Avertissement.** Ce modèle est une démonstration technique. Ce **n'est pas un dispositif
-> médical** et il ne doit en aucun cas être utilisé pour de vrais conseils de santé.
 
 ---
 
