@@ -116,6 +116,7 @@ Interface publique :
 ```text
 http://158.158.16.133:8080/
 ```
+[![Image](https://i.goopics.net/kb2ag2.png)](https://goopics.net/i/kb2ag2)
 
 ## Variables utiles
 
