@@ -158,6 +158,12 @@ Après nettoyage, vérification par échantillonnage :
 | Après dédoublonnage | 240 814 | 7 940 |
 | **Dataset final nettoyé** | **240 814** | **16 102 (6,3 %)** |
 
+ 
+> 📦 **Dataset disponible sur Hugging Face :**
+> 👉 [**Nakwii/medical_dataset_clean**](https://huggingface.co/datasets/Nakwii/medical_dataset_clean)
+ 
+
+
 **Lecture :** le dataset ne contenait aucune ligne vide. Le plus gros retrait vient des réponses
 « bouchon » (7 813 renvois sans contenu médical) et des doublons (7 940). Au total **16 102
 lignes supprimées (6,3 %)**, pour un dataset final de **240 814 conversations propres**.
