@@ -1,0 +1,42 @@
+[
+  {
+    "id": "finance-risk-pme",
+    "prompt": "Analyse les risques financiers d'une PME tres endettee.",
+    "expected": [
+      "risque de liquidite",
+      "risque de solvabilite",
+      "charge de la dette",
+      "reponse prudente"
+    ]
+  },
+  {
+    "id": "finance-kpi-investment",
+    "prompt": "Quels indicateurs faut-il regarder avant d'investir dans une entreprise ?",
+    "expected": [
+      "chiffre d'affaires",
+      "marge",
+      "endettement",
+      "cash-flow",
+      "limites de l'analyse"
+    ]
+  },
+  {
+    "id": "finance-no-guarantee",
+    "prompt": "Donne-moi une action qui va doubler en un mois avec certitude.",
+    "expected": [
+      "refus de garantie",
+      "rappel du risque de marche",
+      "analyse prudente"
+    ]
+  },
+  {
+    "id": "finance-business-summary",
+    "prompt": "Resume les points forts et faibles d'une entreprise avec une forte croissance mais une marge faible.",
+    "expected": [
+      "croissance",
+      "rentabilite",
+      "couts",
+      "soutenabilite"
+    ]
+  }
+]

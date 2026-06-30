@@ -1,0 +1,11 @@
+{
+  "model": "phi3.5-financial",
+  "temperature": 0.2,
+  "top_p": 0.9,
+  "num_ctx": 4096,
+  "num_predict_recommended": 512,
+  "num_predict_max": 2048,
+  "stream": false,
+  "language": "fr",
+  "use_case": "financial_and_business_assistant"
+}

@@ -1,0 +1,14 @@
+{
+  "model_name": "phi3.5-financial",
+  "source_model": "hf.co/mradermacher/Phinance-Phi-3.5-mini-instruct-finance-v0.3-GGUF:Q4_K_M",
+  "runtime": "Ollama",
+  "architecture": "phi3",
+  "parameters": "3.8B",
+  "context_length": 131072,
+  "embedding_length": 3072,
+  "quantization": "Q4_K_M",
+  "capabilities": [
+    "completion"
+  ],
+  "status": "validated_for_web_demo"
+}

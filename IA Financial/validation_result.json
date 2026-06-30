@@ -1,0 +1,10 @@
+{
+  "model": "phi3.5-financial",
+  "validated": true,
+  "optimized": true,
+  "default_temperature": 0.2,
+  "recommended_num_predict": "512-768",
+  "web_backend": "Web/backend/server.py",
+  "web_endpoint": "/api/chat",
+  "summary": "Modele Phi-3.5-Financial valide et optimise pour une demonstration web finance/business."
+}
