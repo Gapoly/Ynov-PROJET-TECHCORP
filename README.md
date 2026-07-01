@@ -23,7 +23,7 @@ Membres:
                     UTILISATEUR (navigateur)
                             |
                             v
-        http://158.158.16.133:8080/   (interface web Chat IA)
+        http://158.158.3.207:8080/   (interface web Chat IA)
                             |
                             v
               Backend Python (proxy)  ──>  http://localhost:11434/api/chat
@@ -117,7 +117,7 @@ PORT=8080 BIND=0.0.0.0 CHAT_MODEL=phi3.5-financial python3 backend/server.py
 Interface publique :
 
 ```text
-http://158.158.16.133:8080/
+http://158.158.3.207:8080/
 ```
 [![Image](https://i.goopics.net/kb2ag2.png)](https://goopics.net/i/kb2ag2)
 
@@ -141,7 +141,7 @@ http://158.158.16.133:8080/
 ## Vérification rapide
 
 ```bash
-curl http://158.158.16.133:8080/health
+curl http://158.158.3.207:8080/health
 ```
 
 Réponse attendue :
@@ -727,7 +727,7 @@ lignes supprimées (6,3 %)**, pour un dataset final de **240 814 conversations p
 
 # 6. CYBER — Audit de sécurité, tests de robustesse
 
-**Cible :** `http://158.158.16.133:8080`
+**Cible :** `http://158.158.3.207:8080`
 **Application :** interface web `Chat IA` + API `/api/chat`
 **Modèle :** `phi3.5-financial`
 **Date :** 30 juin 2026
@@ -753,7 +753,7 @@ Aucune vulnérabilité bloquante n'est confirmée par la passe finale.
 
 ```text
 Navigateur
-  -> http://158.158.16.133:8080/
+  -> http://158.158.3.207:8080/
   -> backend Python SimpleAIChat
   -> http://localhost:11434/api/chat
   -> Ollama
@@ -789,7 +789,7 @@ Les points suivants ont été corrigés ou renforcés dans `Web/backend/server.p
 Commande exécutée :
 
 ```bash
-TIMEOUT_FAST=5 TIMEOUT_LLM=75 ./CYBER/tests-robustesse.sh 158.158.16.133 8080
+TIMEOUT_FAST=5 TIMEOUT_LLM=75 ./CYBER/tests-robustesse.sh 158.158.3.207 8080
 ```
 
 Résultat final :
@@ -855,13 +855,13 @@ Depuis la racine du dépôt :
 
 ```bash
 cd /home/dev/Ynov-PROJET-TECHCORP
-./CYBER/tests-robustesse.sh 158.158.16.133 8080
+./CYBER/tests-robustesse.sh 158.158.3.207 8080
 ```
 
 Mode rapide sans appels longs au modèle :
 
 ```bash
-SKIP_MODEL=1 ./CYBER/tests-robustesse.sh 158.158.16.133 8080
+SKIP_MODEL=1 ./CYBER/tests-robustesse.sh 158.158.3.207 8080
 ```
 
 Variables utiles :
@@ -896,7 +896,7 @@ rate limiting et HTTPS.
 
 - **Dataset médical nettoyé :** https://huggingface.co/datasets/Nakwii/medical_dataset_clean
 - **Dataset source :** https://huggingface.co/datasets/ruslanmv/ai-medical-chatbot
-- **Interface web :** http://158.158.16.133:8080/
+- **Interface web :** http://158.158.3.207:8080/
 - **Notebook fine-tuning :** `finetune_medical_hf.ipynb`
 - **Scripts :** `clean_medical_dataset.py`, `CYBER/tests-robustesse.sh`
 

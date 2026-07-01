@@ -1,7 +1,7 @@
 # Audit securite CYBER - Tests de robustesse
 
 **Projet :** TechCorp IA - Challenge IA 7h  
-**Cible :** `http://158.158.16.133:8080`  
+**Cible :** `http://158.158.3.207:8080`  
 **Application :** interface web `Chat IA` + API `/api/chat`  
 **Modele :** `phi3.5-financial`  
 **Date :** 30 juin 2026  
@@ -30,7 +30,7 @@ Aucune vulnerabilite bloquante n'est confirmee par la passe finale.
 
 ```text
 Navigateur
-  -> http://158.158.16.133:8080/
+  -> http://158.158.3.207:8080/
   -> backend Python SimpleAIChat
   -> http://localhost:11434/api/chat
   -> Ollama
@@ -70,7 +70,7 @@ Les points suivants ont ete corriges ou renforces dans `Web/backend/server.py` :
 Commande executee :
 
 ```bash
-TIMEOUT_FAST=5 TIMEOUT_LLM=75 ./CYBER/tests-robustesse.sh 158.158.16.133 8080
+TIMEOUT_FAST=5 TIMEOUT_LLM=75 ./CYBER/tests-robustesse.sh 158.158.3.207 8080
 ```
 
 Resultat final :
@@ -136,13 +136,13 @@ Depuis la racine du depot :
 
 ```bash
 cd /home/dev/Ynov-PROJET-TECHCORP
-./CYBER/tests-robustesse.sh 158.158.16.133 8080
+./CYBER/tests-robustesse.sh 158.158.3.207 8080
 ```
 
 Mode rapide sans appels longs au modele :
 
 ```bash
-SKIP_MODEL=1 ./CYBER/tests-robustesse.sh 158.158.16.133 8080
+SKIP_MODEL=1 ./CYBER/tests-robustesse.sh 158.158.3.207 8080
 ```
 
 Variables utiles :

@@ -12,7 +12,7 @@
 #
 # Usage :
 #   ./CYBER/tests-robustesse.sh                 # cible par défaut
-#   ./CYBER/tests-robustesse.sh 158.158.16.133 8080
+#   ./CYBER/tests-robustesse.sh 158.158.3.207 8080
 #   TARGET=10.0.0.5 PORT=8080 ./CYBER/tests-robustesse.sh
 #   SKIP_MODEL=1 ./tests-robustesse.sh    # saute les tests LLM (longs)
 #
@@ -24,7 +24,7 @@ set -u
 # --------------------------------------------------------------------------- #
 # Configuration
 # --------------------------------------------------------------------------- #
-TARGET="${1:-${TARGET:-158.158.16.133}}"
+TARGET="${1:-${TARGET:-158.158.3.207}}"
 PORT="${2:-${PORT:-8080}}"
 BASE="http://${TARGET}:${PORT}"
 MODEL="${MODEL:-phi3.5-financial}"

@@ -30,7 +30,7 @@ PORT=8080 BIND=0.0.0.0 CHAT_MODEL=phi3.5-financial python3 backend/server.py
 Interface publique :
 
 ```text
-http://158.158.16.133:8080/
+http://158.158.3.207:8080/
 ```
 
 ## Variables utiles
@@ -53,7 +53,7 @@ http://158.158.16.133:8080/
 ## Vérification rapide
 
 ```bash
-curl http://158.158.16.133:8080/health
+curl http://158.158.3.207:8080/health
 ```
 
 Réponse attendue :
